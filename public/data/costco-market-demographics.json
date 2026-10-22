@@ -1,0 +1,16 @@
+{
+  "schema": "byou-costco-market-demographics-v1",
+  "datasetVersion": "fictional-sample",
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "source": {
+    "name": "Sample: demographic enrichment unavailable"
+  },
+  "counts": {},
+  "stores": [],
+  "warehouseMappings": {},
+  "placesByGeoid": {},
+  "storesByWarehouseNo": {},
+  "unmatchedWarehouseNos": [],
+  "groupDefinitions": [],
+  "cachedProfileNote": "Demographic enrichment omitted from the public sample."
+}
