@@ -147,12 +147,12 @@ function cachedMarketProfile(store) {
   const cached = store?.demographics;
   if (!cached) return null;
   return {
-    source:"Prior Costco 5-mile Census profile",
-    vintage:"Census vintage not recorded in source workbook",
+    source:"Fictional demonstration data",
+    vintage:"Synthetic sample",
     radiusMiles:Number(cached.radiusMiles || 5),
     tractCount:Number(cached.tractCount || 0),
     method:cached.scope || "5-mile Census tract radius",
-    caveat:"Area estimate only; this describes nearby residents, not verified Costco shoppers. The prior profile did not preserve Census margins of error or data vintage.",
+    caveat:"Fictional aggregate profiles.",
     cached:true,
     metrics:{
       population:cached.population,
@@ -421,6 +421,7 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
     return fmtCurrency(numeric);
   };
   const metricMoe = (metric, formatter = formatNumber) => {
+    if (cityReference.data?.synthetic) return "";
     if (metric?.moeAnnotation === "controlled") return copy("Controlled Census estimate; sampling MOE treated as 0", "Census 통제 추정치; 표본 오차범위는 0으로 처리");
     if (metric?.moeAnnotation === "open_interval") return copy("Open-ended Census interval; conventional MOE unavailable", "Census 개방형 구간; 일반 오차범위 없음");
     if (metric?.moeAnnotation === "insufficient_sample") return copy("Census MOE unavailable because the sample is insufficient", "표본 부족으로 Census 오차범위 없음");
@@ -544,7 +545,6 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
             </div>
           </div>
           <div style={{ gridColumn:"1 / -1", color:C.muted, fontSize:9, lineHeight:1.45 }}>
-            {copy("Mailing city may differ from Census boundaries.", "우편 주소 도시는 웨어하우스 주소 기준이며 공식 Census 지역과 다를 수 있습니다.")}
           </div>
         </div>
 
@@ -557,7 +557,7 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
                 {directoryStore?.street ? ` - ${directoryStore.street}` : ""}
               </div>
             </div>
-            <div style={{ fontSize:10, color:C.muted, textAlign:"right" }}>{copy("5-mi local estimate + official Census city reference", "5마일 지역 추정치 + 공식 Census 도시 기준")}<br/>{directoryStore ? `${directoryStore.lat.toFixed(4)}, ${directoryStore.lng.toFixed(4)}` : copy("Directory coordinates unavailable", "디렉터리 좌표 없음")}</div>
+            <div style={{ fontSize:10, color:C.muted, textAlign:"right" }}>{copy("Fictional market profiles", "가상 시장 프로필")}<br/>{directoryStore ? `${directoryStore.lat.toFixed(4)}, ${directoryStore.lng.toFixed(4)}` : copy("Directory coordinates unavailable", "디렉터리 좌표 없음")}</div>
           </div>
         )}
 
@@ -591,18 +591,16 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
               <>
                 <div data-demographic-slot="summary" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(125px,1fr))", gap:8, marginBottom:13, alignContent:"start", alignItems:"start" }}>
                   <MarketMetric label={copy("Estimated Population", "추정 인구")} value={formatNumber(localMetrics.population)} sub={`${localProfile.tractCount || 0} ${copy("tracts", "트랙")}`} color={C.accent}/>
-                  <MarketMetric label={copy("Avg Household Income", "평균 가구소득")} value={formatMoney(localMetrics.averageHouseholdIncome ?? localMetrics.incomeIndicator)} sub={copy("Prior source field", "이전 소스 필드")} color={C.green}/>
-                  <MarketMetric label={copy("Average Age", "평균 연령")} value={formatDecimal(localMetrics.medianAgeIndicator)} sub={copy("Prior source field", "이전 소스 필드")} color={C.purple}/>
+                  <MarketMetric label={copy("Avg Household Income", "평균 가구소득")} value={formatMoney(localMetrics.averageHouseholdIncome ?? localMetrics.incomeIndicator)}  color={C.green}/>
+                  <MarketMetric label={copy("Average Age", "평균 연령")} value={formatDecimal(localMetrics.medianAgeIndicator)}  color={C.purple}/>
                 </div>
                 <div data-demographic-slot="race-heading" style={{ ...MONO, fontSize:9, color:C.muted, textTransform:"uppercase", letterSpacing:0.8, marginBottom:3 }}>{copy("Race and ethnicity", "인종 및 민족")}</div>
                 {localComposition.map(([label, value, moe, color], index) => <DemographicShareRow key={label} rowKey={["asian", "white", "black", "hispanic"][index]} label={label} value={value} moe={moe} color={color}/>)}
                 {localGenderRows.map(([label, value, moe, color], index) => <DemographicShareRow key={label} rowKey={["male", "female"][index]} label={label} value={value} moe={moe} color={color}/>)}
-                {selectedCountry !== "US" && <div data-demographic-slot="footer" style={{ color:C.warn, fontSize:9, lineHeight:1.45, marginTop:9 }}>{copy("Source vintage and margins of error were not retained in the prior 5-mi workbook.", "기존 5마일 워크북에는 소스 빈티지와 오차범위가 보존되지 않았습니다.")}</div>}
               </>
             )}
             {selectedCountry === "US" && warehouseNo && (
               <div data-demographic-slot="footer" style={{ marginTop:10, paddingTop:10, borderTop:`1px solid ${C.border}`, color:C.muted, fontSize:9, lineHeight:1.5 }}>
-                {localProfile && <div style={{ color:C.warn, marginBottom:9 }}>{copy("Source vintage and margins of error were not retained in the prior 5-mi workbook. The detailed groups below use a separate current Census release.", "기존 5마일 워크북에는 소스 빈티지와 오차범위가 보존되지 않았습니다. 아래 상세 그룹은 별도의 최신 Census 릴리스를 사용합니다.")}</div>}
                 <button
                   type="button"
                   data-local-asian-details-toggle
@@ -616,8 +614,8 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
                   <div data-local-asian-details style={{ marginTop:10, paddingTop:10, borderTop:`1px solid ${C.border}`, color:C.text }}>
                     <div style={{ fontSize:11, fontWeight:600 }}>{copy("Current five-mile Asian groups", "현재 5마일 아시아계 상세 그룹")}</div>
                     <div style={{ color:C.muted, marginTop:2 }}>{localAsianDetailsShowAll
-                      ? copy(`2024 ACS 5-Year table B02018 · all ${localAsianGroupRows.length} detailed groups`, `2024 ACS 5년 B02018 표 · 전체 ${localAsianGroupRows.length}개 상세 그룹`)
-                      : copy("2024 ACS 5-Year table B02018 · largest six by share of current five-mile profile population", "2024 ACS 5년 B02018 표 · 현재 5마일 프로필 인구 비중 기준 상위 6개")}</div>
+                      ? copy(`All ${localAsianGroupRows.length} detailed groups`, `전체 ${localAsianGroupRows.length}개 상세 그룹`)
+                      : copy("Largest six groups", "상위 6개 그룹")}</div>
                     {localAsianReference.state === "loading" && <div style={{ padding:"12px 0", color:C.muted }}>{copy("Loading current five-mile Census groups...", "현재 5마일 Census 상세 그룹 로딩 중...")}</div>}
                     {localAsianReference.state === "error" && (
                       <div style={{ marginTop:8, padding:"9px", borderRadius:6, background:C.redFade, color:C.red }}>
@@ -634,7 +632,6 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
                     )}
                     {localAsianProfile?.status === "complete" && (
                       <>
-                        <div style={{ color:C.muted, marginTop:7 }}>{localAsianProfile.tractCount} {copy("whole tracts selected", "개 전체 트랙 선택")} · {copy("90% MOE", "90% 오차범위")}</div>
                         <div style={{ overflowX:"auto", marginTop:8 }}>
                           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10 }}>
                             <thead>
@@ -667,7 +664,6 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
                           </button>
                         )}
                         <div style={{ marginTop:7, color:C.warn, lineHeight:1.45 }}>
-                          {copy("This is a separate current-vintage approximation: whole tracts are selected by internal point within five miles, plus the warehouse's containing tract. It is not directly comparable to the older five-mile headline figures. B02018 groups overlap and describe nearby residents, not shopper identity.", "이는 별도의 최신 빈티지 근사치입니다. 내부 지점이 5마일 이내인 전체 트랙과 웨어하우스가 포함된 트랙을 선택합니다. 기존 5마일 요약 수치와 직접 비교할 수 없습니다. B02018 그룹은 중복될 수 있으며 인근 거주자를 설명할 뿐 쇼핑객 신원을 의미하지 않습니다.")}
                         </div>
                       </>
                     )}
@@ -683,7 +679,7 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
                 <div style={{ fontSize:13, fontWeight:600, color:C.text }}>{cityReferenceTitle}</div>
                 <div style={{ color:C.muted, fontSize:9, marginTop:3 }}>{cityReferenceSubtitle}</div>
               </div>
-              <StatusChip label={outsideCensusPlace || censusCityUnavailable ? copy("5 mi only", "5마일만") : cityProfile ? `${cityProfile.vintage.year} ACS5` : "Census"} col={cityProfile ? C.green : C.muted}/>
+              <StatusChip label={outsideCensusPlace || censusCityUnavailable ? copy("5 mi only", "5마일만") : cityProfile ? "City" : "Census"} col={cityProfile ? C.green : C.muted}/>
             </div>
             {cityReference.state === "loading" && <div style={{ padding:"18px", textAlign:"center", color:C.muted, fontSize:10 }}>{copy("Loading bundled City Reference...", "번들 도시 기준 로딩 중...")}</div>}
             {cityReference.state === "error" && <div style={{ padding:"12px", borderRadius:7, background:C.redFade, color:C.red, fontSize:10 }}>{cityReference.error}</div>}
@@ -703,7 +699,6 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
                 {cityComposition.map(([label, value, moe, color], index) => <DemographicShareRow key={label} rowKey={["asian", "white", "black", "hispanic"][index]} label={label} value={value} moe={moe} color={color}/>)}
                 {cityGenderRows.map(([label, value, moe, color], index) => <DemographicShareRow key={label} rowKey={["male", "female"][index]} label={label} value={value} moe={moe} color={color}/>)}
                 <div data-demographic-slot="footer" style={{ color:C.muted, fontSize:9, lineHeight:1.5, marginTop:9 }}>
-                  <div>{cityProfile.vintage.dataset} ({cityProfile.vintage.period}) · {copy("90% MOE", "90% 오차범위")} · Census GEOID {cityProfile.geoid} · {copy("boundaries", "경계")} {cityProfile.vintage.boundaryDate}</div>
                   <button
                     type="button"
                     data-city-asian-details-toggle
@@ -717,8 +712,8 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
                     <div data-city-asian-details style={{ marginTop:10, paddingTop:10, borderTop:`1px solid ${C.border}`, color:C.text }}>
                       <div style={{ fontSize:11, fontWeight:600 }}>{copy("Detailed Asian groups", "아시아계 상세 그룹")}</div>
                       <div style={{ color:C.muted, marginTop:2 }}>{asianDetailsShowAll
-                        ? copy(`2024 ACS 5-Year table B02018 · all ${asianGroupRows.length} detailed groups`, `2024 ACS 5년 B02018 표 · 전체 ${asianGroupRows.length}개 상세 그룹`)
-                        : copy("2024 ACS 5-Year table B02018 · largest six by share of total city population", "2024 ACS 5년 B02018 표 · 도시 전체 인구 비중 기준 상위 6개")}</div>
+                        ? copy(`All ${asianGroupRows.length} detailed groups`, `전체 ${asianGroupRows.length}개 상세 그룹`)
+                        : copy("Largest six groups", "상위 6개 그룹")}</div>
                       {asianReference.state === "loading" && <div style={{ padding:"12px 0", color:C.muted }}>{copy("Loading detailed Census groups...", "Census 상세 그룹 로딩 중...")}</div>}
                       {asianReference.state === "error" && (
                         <div style={{ marginTop:8, padding:"9px", borderRadius:6, background:C.redFade, color:C.red }}>
@@ -762,7 +757,6 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
                             </button>
                           )}
                           <div style={{ marginTop:7, color:C.warn, lineHeight:1.45 }}>
-                            {copy("B02018 counts Asian alone or in any combination. Groups are not additive because one person may report more than one detailed Asian group or another race. This is citywide resident context, not shopper identity.", "B02018은 아시아계 단독 또는 다른 인종과의 조합을 집계합니다. 한 사람이 여러 아시아계 상세 그룹이나 다른 인종을 응답할 수 있어 그룹 합계는 서로 더할 수 없습니다. 이는 도시 전체 거주자 정보이며 쇼핑객 신원을 의미하지 않습니다.")}
                           </div>
                         </>
                       )}
