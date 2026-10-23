@@ -140,7 +140,7 @@ export default function PnlView({ lang = "en", productOptions = [], campaignOpti
     </Section>
     {selected && <div className="pnl-detail-grid" style={{ display:"grid", gridTemplateColumns:"minmax(0,1.25fr) minmax(280px,.75fr)", gap:12 }}><div style={{ display:"flex", flexDirection:"column", gap:12 }}>
       <Section title={`${selected.productName} · ${selected.campaignName}`} action={<Badge status={selected.status} lang={lang}/>}>
-        <table className="pnl-table"><thead><tr><th>USD</th><th>Actual · Oct 20</th><th>Forecast · Nov 19</th></tr></thead><tbody>
+        <table className="pnl-table" style={{minWidth:0,width:"100%",tableLayout:"fixed"}}><thead><tr><th style={{width:"44%"}}>USD</th><th>Actual · Oct 20</th><th>Forecast · Nov 19</th></tr></thead><tbody>
         {pnlRows(selected).map(([label,actual,forecast]) => <tr key={label} style={label.includes("profit") ? {fontWeight:700,background:C.subtle} : undefined}><td>{label}</td><td style={MONO}>{money(actual)}</td><td style={MONO}>{money(forecast)}</td></tr>)}
         </tbody></table>
       </Section>
