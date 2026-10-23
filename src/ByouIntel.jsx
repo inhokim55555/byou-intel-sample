@@ -2,7 +2,6 @@
 const PORTFOLIO_CALENDAR_NOTES = [];
 import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useUiText, LanguageContext, VIDEO_METRICS, fmtCurrency, productValuesMatch, normalizedProductKey, productDisplayName, productLabelForValue, canonicalCompanyProductLabel, COMPANY_PRODUCT_ALIAS_TO_CANONICAL, PRODUCTS, productMetaForProduct, productMetaNameKey, rowMatchesCampaignScope, rowCampaignId, VIDEO_CHANGE_METRICS, productWithMeta, productColorForValue, C, metricGrowth, parseISODate, videoDisplayName, SANS, HELVETICA_NEUE_STACK, Panel, MONO, fmtMetricDelta, safeExternalHttpUrl, CARD_METRICS, fmtGrowth, MAP_W, MAP_H, KpiCard, fmtCompactMoney } from "./ui/dashboardShared.jsx";
-const LazyVideosView = React.lazy(() => import("./features/videos/VideosView.jsx"));
 const LazyMapView = React.lazy(() => import("./features/map/MapView.jsx"));
 import useRuntimeView from "./data/useRuntimeView.js";
 import useStartupDataset from "./data/useStartupDataset.js";
@@ -6708,7 +6707,6 @@ useRuntimeView({ analysisPaintRef, applyRuntimeViewDataset, detailLoadedRef, inv
     ["inventory", t("nav.inventory","Inventory")],
     ["rankings", t("nav.analysis","Analysis")],
     ["pnl", t("nav.pnl","P&L")],
-    ["videos", t("nav.videos","Videos")],
   ];
   const switchReport = useCallback(nextTab => {
     if (!nextTab || nextTab === tab) return;
@@ -7001,7 +6999,6 @@ useRuntimeView({ analysisPaintRef, applyRuntimeViewDataset, detailLoadedRef, inv
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, marginBottom:12 }}>
             <div>
               <div style={{ fontSize:10, ...MONO, color:C.muted, textTransform:"uppercase", letterSpacing:1, marginBottom:3 }}>{t("data.title", "Data Sources")}</div>
-              <div style={{ fontSize:12, color:C.text, fontWeight:500 }}>{t("data.subtitle", "Upload, refresh, or publish the team dataset")}</div>
             </div>
             <button onClick={() => setShowSettings(false)} aria-label={t("data.close", "Close data sources")} style={{ width:32, height:32, borderRadius:8, border:`1px solid ${C.border}`, background:C.card, color:C.muted, cursor:"pointer", fontSize:16, lineHeight:"30px" }}>x</button>
           </div>
@@ -7080,7 +7077,6 @@ useRuntimeView({ analysisPaintRef, applyRuntimeViewDataset, detailLoadedRef, inv
           <div className={`bi-sidebar${sidebarOpen ? " bi-open" : ""}`} style={{ width:sidebarWidth, borderRight:`1px solid ${C.border}`, background:C.sidebar, display:"flex", flexDirection:"column", flexShrink:0, boxShadow:"inset -1px 0 0 rgba(255,255,255,0.55)", position:"sticky", top:0, alignSelf:"flex-start", height:sidebarHeight, maxHeight:sidebarHeight, overflowY:"auto", zIndex:12 }}>
 
             <div style={{ padding:"12px 12px 12px", borderBottom:`1px solid ${C.border}`, background:C.sidebar, flexShrink:0, display:"flex", flexDirection:"column" }}>
-              <div style={{ fontSize:10, ...MONO, color:C.muted, textTransform:"uppercase", letterSpacing:0.8, marginBottom:9, flexShrink:0 }}>{t("common.reports", "Reports")}</div>
               <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
                 {reportNavItems.map(([key, label]) => {
                   const active = tab === key;
@@ -7095,13 +7091,8 @@ useRuntimeView({ analysisPaintRef, applyRuntimeViewDataset, detailLoadedRef, inv
             </div>
 
             <div style={{ padding:"14px 12px 16px", borderBottom:`1px solid ${C.border}`, background:C.sidebar, flexShrink:0, minHeight:0, display:"flex", flexDirection:"column" }}>
-              <div style={{ fontSize:10, ...MONO, color:C.muted, textTransform:"uppercase", letterSpacing:0.8, marginBottom:11, flexShrink:0 }}>{t("common.filters", "Filters")}</div>
               <div style={{ display:"flex", flexDirection:"column", gap:13, paddingRight:2 }}>
-                {tab === "pnl" ? (
-                  <div style={{ fontSize:11, color:C.muted, lineHeight:1.55 }}>
-                    {uiLang === "ko" ? "손익 탭 안의 기준일과 캠페인 표를 사용하세요. 재무 데이터는 Costco 고객 매출 필터와 분리됩니다." : "Use the as-of date and campaign table inside P&L. Financial records stay separate from Costco shopper-sales filters."}
-                  </div>
-                ) : tab === "map" ? (
+                {tab === "pnl" ? null : tab === "map" ? (
                   <>
                     <label style={sidebarFilterFieldStyle}>
                       <span style={sidebarFilterLabelStyle}>{t("filter.baselineProduct", "Baseline Product")}</span>
@@ -7324,12 +7315,8 @@ useRuntimeView({ analysisPaintRef, applyRuntimeViewDataset, detailLoadedRef, inv
 
             <div style={{ marginTop:"auto", padding:"12px", background:C.sidebar, display:"flex", flexDirection:"column", gap:5, flexShrink:0 }}>
               <LanguageToggle lang={uiLang} setLang={setUiLang} muted style={{ width:"100%", justifyContent:"stretch" }}/>
-              <button onClick={() => setShowSettings(s=>!s)} className="bi-navbtn" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, width:"100%", border:`1px solid ${showSettings ? C.accent : "transparent"}`, background:showSettings ? C.card : "transparent", color:showSettings ? C.text : C.muted, borderRadius:5, padding:"7px 8px", cursor:"pointer", fontSize:12, ...REPORT_NAV_FONT, fontWeight:400, textAlign:"left" }}>
-                <span>{t("nav.dataSources", "Data Sources")}</span>
-              </button>
-              <button onClick={logoutAndReload} className="bi-navbtn" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, width:"100%", border:"1px solid transparent", background:"transparent", color:C.muted, borderRadius:5, padding:"7px 8px", cursor:"pointer", fontSize:12, ...REPORT_NAV_FONT, fontWeight:400, textAlign:"left" }}>
-                <span>{t("nav.logout", "Log Out")}</span>
-              </button>
+
+
             </div>
           </div>
         )}
@@ -7386,7 +7373,6 @@ useRuntimeView({ analysisPaintRef, applyRuntimeViewDataset, detailLoadedRef, inv
           {tab==="analytics" && <><AnalyticsView compactModel={salesViewModel} salesChannel={campaignChannel} sales={channelData.sales} prodSales={channelData.prodSales} inlineTotalSales={channelData.inlineTotalSales} onlineSales={channelData.onlineSales} ppcRows={channelData.ppcRows} whs={visibleActiveWhs} ranked={searchedSidebarRows} selId={selId} footnotes={PORTFOLIO_CALENDAR_NOTES} dateRange={analyticsDR} selPid={selPid} salesRegion={salesRegion} salesState={salesState} productMeta={productMeta} campaignMeta={campaignMeta} campaignId={activeCampaignId} storeSearchActive={!!storeQuery} analysisSummaries={analysisSummaries}/></>}
           {tab==="inventory" && <InventoryView compactModel={inventoryViewModel} ownerSalesHistory={effectiveOwnerSalesHistory} ownerInventoryDecisions={ownerInventoryDecisions} prodSales={prodSales} inlineTotalSales={inlineTotalSales} onlineSales={onlineSales} inventoryApprovals={effectiveInventoryApprovals} inventoryReviewDispositions={inventoryReviewDispositions} whs={visibleInventoryWhs} selId={selId} dateRange={inventoryDR} selPid={inventoryPid} inventoryType={inventoryType} inventoryRegion={inventoryRegion} inventoryState={inventoryState} productMeta={productMeta} campaignMeta={campaignMeta} campaignId={activeCampaignId} storeSearchActive={!!storeQuery} approvalEvaluationDate={inventoryApprovalEvaluationDate} onApproveInventory={inventoryApprovalEnabled ? approveInventoryOnHand : null} onRevokeInventory={inventoryApprovalEnabled ? revokeInventoryOnHand : null}/>}
           {tab==="rankings"  && <React.Suspense fallback={<div style={{ padding:"28px", color:C.muted, textAlign:"center" }}>Loading Analysis...</div>}><LazyRankingsView onReady={markAnalysisReady} compactRequestKey={runtimeRequestKey} model={activeAnalysisModel} ranked={ranked} whs={analysisSection === "warehouses" ? whs : activeWhs} setSelId={setSelId} selId={analysisSection === "demographics" ? demographicsWarehouseId : selId} dateRange={campaignDR} campaignPid={campaignPid} campaignCid={campaignCid || activeCampaignId} productMeta={productMeta} campaignMeta={campaignMeta} productOptions={productOptions} analysisSection={analysisSection} setAnalysisSection={selectAnalysisSection} analysisOptions={analysisOptions} setAnalysisOptions={setAnalysisOptions} compareA={effectiveCompareA} setCompareA={setCompareA} compareB={effectiveCompareB} setCompareB={setCompareB} compareCampaignA={compareCampaignA} setCompareCampaignA={setCompareCampaignA} compareCampaignB={compareCampaignB} setCompareCampaignB={setCompareCampaignB} comparisonCampaignOptions={comparisonCampaignOptions} pacingCompPid={pacingCompPid} setPacingCompPid={setPacingCompPid} pacingCompCid={pacingCompCid} setPacingCompCid={setPacingCompCid} warehouseProfileQuery={analysisSection === "warehouses" ? runtimeQuery : null} warehouseProfileProductKey={analysisSection === "warehouses" ? runtimeProductKey : ""} onWarehousePublicationStale={refreshPublishedAnalysis}/></React.Suspense>}
-          {tab==="videos"    && <React.Suspense fallback={<div role="status">{t("app.loading", "Loading BYOU Intel...")}</div>}><TabReady requestKey={`${tab}|${runtimeRequestKey}`} onReady={setLazyTabReadyKey}><LazyVideosView    videos={channelData.videos} videoMetrics={videoMetrics} selPid={videoSelPid} selPlatform={videoPlatform} selType={videoType} dateRange={videoDateRange} selVid={selVid} setSelVid={setSelVid} selMetric={selVideoMetric} setSelMetric={setSelVideoMetric} productMeta={productMeta} campaignId={activeCampaignId}/></TabReady></React.Suspense>}
           </RuntimeViewBoundary>}
         </div>
       </div>
@@ -7898,8 +7884,6 @@ function CampaignView({ prodSales, portfolioSales = [], inlineTotalSales, wareho
     const add = item => items.push(item);
     if (officialInlineTotalsMissing) add({ severity:"info", col:C.blue, title:"Costco Daily Totals missing", metric:"No Costco_Daily_Totals rows matched this campaign/date range", action:"Upload or correct Costco_Daily_Totals for the official campaign sales total." });
     if (!usesOnlineSales && !storeRows.length) add({ severity:"info", col:C.blue, title:"Qualified door detail missing", metric:"No warehouse rows cleared the analysis-door screen", action:"Upload or check store-level rows with real inventory and sell-through movement." });
-    if (!videos.length) add({ severity:"info", col:C.blue, title:"Video tracker missing", metric:"No uploaded video rows", action:"Upload Paid or Seeding video data to connect campaign activity." });
-    else if (!campaignVideos.length) add({ severity:"info", col:C.blue, title:"No campaign videos in range", metric:`${campaignName}: 0 videos from ${dateRange.start} to ${dateRange.end}`, action:"Check whether influencer activity should be added for this campaign window." });
     if (campaignPpcTotals.rows && campaignPpcTotals.totalSpend > 0 && campaignPpcTotals.totalRoas > 0 && campaignPpcTotals.totalRoas < 2) add({ severity:"orange", col:C.warn, title:"Paid-media ROAS watch", metric:`${formatRoas(campaignPpcTotals.totalRoas)} on ${fmtCompactMoney(campaignPpcTotals.totalSpend)} spend`, action:`Review paid-media targeting, bid pressure, and whether the media window lines up with ${usesOnlineSales ? "online" : "inline"} sales movement.` });
     if (campaignPpcTotals.missedSales > 0 || campaignPpcTotals.missedSpend > 0) add({ severity:"orange", col:C.warn, title:"Paid-media missed opportunity", metric:`${fmtCompactMoney(campaignPpcTotals.missedSales)} missed sales / ${fmtCompactMoney(campaignPpcTotals.missedSpend)} missed spend`, action:"Check paid-media capout, pacing, or budget constraints before the next media window." });
     if (!usesOnlineSales && !totalWarehouses) add({ severity:"info", col:C.blue, title:"Total Warehouses missing", metric:"Products_Master has no Total Warehouses value for this campaign", action:"Add Total Warehouses in Products_Master so the campaign footprint remains visible." });
@@ -8450,13 +8434,11 @@ function CampaignView({ prodSales, portfolioSales = [], inlineTotalSales, wareho
   const comparisonRailItems = !showOverviewView ? [] : usesOnlineSales ? [
     { label:"Online Sales", current:fmtCompactMoney(selectedSalesRev), comparison:hasEligiblePriorData ? { prior:priorMoneyText, delta:comparisonText(selectedSalesRev, priorRev, "$0") } : null, color:selectedSalesColor },
     { label:unitSeriesLabel, current:selectedSalesUnits.toLocaleString(), comparison:hasEligiblePriorData ? { prior:priorUnitsText, delta:comparisonText(selectedSalesUnits, priorUnits, "0") } : null, color:selectedUnitsColor },
-    { label:"Videos", current:campaignVideos.length.toLocaleString(), detail:`${campaignVideoMix.paid} paid / ${campaignVideoMix.seeding} seeding`, color:C.blue },
     { label:"Paid Media", current:campaignPpcTotals.sourceRows.toLocaleString(), detail:campaignPpcTotals.totalSpend ? `${fmtCompactMoney(campaignPpcTotals.totalSpend)} spend` : "Context only", color:C.muted },
   ] : [
     { label:"Inline Sales", current:officialInlineTotalsMissing ? t("common.missing", "Missing") : fmtCompactMoney(inlineRev), comparison:!officialInlineTotalsMissing && hasEligiblePriorData ? { prior:priorMoneyText, delta:comparisonText(inlineRev, priorRev, "$0") } : null, detail:officialInlineTotalsMissing ? "Current missing" : null, color:officialInlineTotalsMissing ? C.muted : selectedSalesColor },
     { label:"Inline Units", current:officialInlineTotalsMissing ? t("common.missing", "Missing") : inlineUnits.toLocaleString(), comparison:!officialInlineTotalsMissing && hasEligiblePriorData ? { prior:priorUnitsText, delta:comparisonText(inlineUnits, priorUnits, "0") } : null, detail:officialInlineTotalsMissing ? "Current missing" : null, color:officialInlineTotalsMissing ? C.muted : selectedUnitsColor },
     { label:"Revenue / Door", current:officialInlineTotalsMissing ? t("common.missing", "Missing") : activeDoors ? fmtCompactMoney(revenuePerDoor) : t("common.notAvailable", "N/A"), comparison:!officialInlineTotalsMissing && activeDoors && hasEligiblePriorData && priorDoorStats.activeDoors ? { prior:fmtCompactMoney(priorDoorStats.revenuePerDoor), delta:priorDoorDelta } : null, detail:officialInlineTotalsMissing ? "Current missing" : !activeDoors ? "No verified weekly periods" : null, color:officialInlineTotalsMissing ? C.muted : health.col },
-    { label:"Videos", current:campaignVideos.length.toLocaleString(), detail:`${campaignVideoMix.paid} paid / ${campaignVideoMix.seeding} seeding`, color:C.blue },
   ];
   const kpis = usesOnlineSales ? [
     { label:"Online Sales", val:fmtCompactMoney(selectedSalesRev), exact:fmtCurrency(selectedSalesRev), c:selectedSalesColor },
@@ -8512,7 +8494,6 @@ function CampaignView({ prodSales, portfolioSales = [], inlineTotalSales, wareho
     <>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, marginBottom:14, flexWrap:"wrap" }}>
         <div>
-          <div style={{ ...MONO, fontSize:10, color:C.muted, textTransform:"uppercase", letterSpacing:1, marginBottom:4 }}>{analysisPlanningMode ? (lang === "ko" ? "캠페인 분석 및 계획" : "Campaign Analysis & Planning") : (lang === "ko" ? "캠페인 커맨드 센터" : "Campaign Command Center")}</div>
           <div style={{ fontSize:22, color:C.text, fontWeight:500, lineHeight:1.15 }}>{campaignName}</div>
         </div>
         {!analysisPlanningMode && (
@@ -8712,7 +8693,7 @@ function CampaignView({ prodSales, portfolioSales = [], inlineTotalSales, wareho
               ) : <div style={{ textAlign:"center", padding:"34px 0", color:C.muted, fontSize:11 }}>{lang==="ko"?"이 기간과 일치하는 캠페인 매출 행이 없습니다.":"No campaign sales rows match this range."}</div>}
             </Panel>
 
-            <Panel title="KPI Comparison" style={{ marginBottom:0, padding:"14px 14px 12px" }}>
+            <Panel title="Performance" style={{ marginBottom:0, padding:"14px 14px 12px" }}>
               <div style={{ display:"flex", flexDirection:"column", gap:0 }}>
                 {comparisonRailItems.map((item, i) => (
                   <div key={item.label} style={{ padding:i === 0 ? "0 0 12px" : "12px 0", borderTop:i ? `1px solid ${C.border}` : "none" }}>
@@ -10948,7 +10929,6 @@ function ProductsView({ prodSales, ranked, selId, footnotes, selPid, dateRange, 
           </LineChart>
         </ResponsiveContainer>
         {chartData.length===0&&<div style={{textAlign:"center",padding:"20px 0",fontSize:11,color:C.muted}}>No data for this range and product.</div>}
-        <div style={{marginTop:6,fontSize:10,color:C.muted,...SANS}}>Tip: set start=end for a single-day lookup. Range ≤14 days switches to daily bars.</div>
       </Panel>
 
       {/* Per-store breakdown — only when no store selected */}

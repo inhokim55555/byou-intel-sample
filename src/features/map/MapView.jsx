@@ -298,9 +298,7 @@ export default function MapView({ ranked, selId, setSelId, minT, maxT, mapFeatur
                 <div style={{ fontSize:11, color:selectedStoreColor || C.muted, marginTop:2 }}>{sel.comparisonMode ? `${sel.comparisonLeader} leads by ${fmtCompactMoney(Math.abs(sel.comparisonDelta || 0))}` : sel.trend?.label || "Trend unavailable"}</div>
               </div>
             </div>
-          ) : (
-            <div style={{ fontSize:11, color:C.muted, textAlign:"center", padding:"4px 0" }}>{lang === "ko" ? "점을 클릭하거나 사이드바에서 매장을 선택해 상세 정보를 확인하세요." : "Click a dot or select from the sidebar to inspect a store."}</div>
-          )}
+          ) : null}
         </div>
       </Panel>
     </>

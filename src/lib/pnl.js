@@ -19,7 +19,7 @@ export const PNL_OVERRIDE_FIELDS = Object.freeze([
   "plannedMarketing",
 ]);
 export const PNL_FORECAST_LINE_TYPES = Object.freeze([
-  "forecast_revenue", "forecast_cogs", "promotion", "markdown", "endcap", "costco_allowance",
+  "forecast_revenue", "forecast_cogs", "import_cost", "promotion", "markdown", "endcap", "costco_allowance",
   "packaging", "returns", "costco_marketing", "planned_marketing", "other_campaign_expense",
 ]);
 
@@ -244,7 +244,7 @@ export function buildPnlView({ forecasts = [], payments = [], actuals = [], over
   const scopes = new Map();
   const touch = row => {
     const key = scopeKey(row);
-    if (key !== "|") scopes.set(key, { pid:row.pid, cid:row.cid, productName:row.productName || "", campaignName:row.campaignName || "", channel:row.channel || "Inline" });
+    if (key !== "|") scopes.set(key, { pid:row.pid, cid:row.cid, productName:row.productName || scopes.get(key)?.productName || "", campaignName:row.campaignName || scopes.get(key)?.campaignName || "", channel:row.channel || "Inline" });
   };
   [...forecastRows, ...actualRows, ...paymentRows].forEach(touch);
 

@@ -488,7 +488,7 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
     ? copy("Use the Local Market Profile at left; no official citywide Census profile", "왼쪽의 지역 시장 프로필을 사용하세요. 공식 도시 전체 Census 프로필은 없습니다.")
     : censusCityUnavailable
       ? copy("Use the Local Market Profile at left; City Reference is available only for U.S. warehouses", "왼쪽의 지역 시장 프로필을 사용하세요. 도시 기준은 미국 웨어하우스에만 제공됩니다.")
-      : cityProfile?.name || copy("Official Census place containing the warehouse", "웨어하우스가 위치한 공식 Census 지역");
+      : cityProfile?.name || copy("Census city", "웨어하우스가 위치한 공식 Census 지역");
 
   return (
     <div data-demographics-content-ready={directory.state === "ready" && cityReference.state === "ready" && !!warehouseId ? "true" : "false"}>
@@ -544,7 +544,7 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
             </div>
           </div>
           <div style={{ gridColumn:"1 / -1", color:C.muted, fontSize:9, lineHeight:1.45 }}>
-            {copy("Mailing city comes from the warehouse address and may differ from its official Census place.", "우편 주소 도시는 웨어하우스 주소 기준이며 공식 Census 지역과 다를 수 있습니다.")}
+            {copy("Mailing city may differ from Census boundaries.", "우편 주소 도시는 웨어하우스 주소 기준이며 공식 Census 지역과 다를 수 있습니다.")}
           </div>
         </div>
 
@@ -565,7 +565,7 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))", gap:8, marginBottom:16 }}>
           <MarketMetric label={copy("Warehouse Revenue", "웨어하우스 매출")} value={salesContext.hasRows ? fmtCompactMoney(salesContext.revenue) : "N/A"} sub={`${dateRange.start} to ${dateRange.end}`} color={C.green}/>
           <MarketMetric label={copy("Units Sold", "판매 유닛")} value={salesContext.hasRows ? Math.round(salesContext.units).toLocaleString() : "N/A"} sub={salesContext.hasRows ? `${salesContext.reportingPeriods} ${copy("reporting periods", "보고 기간")}` : copy("Warehouse sales rows unavailable", "웨어하우스 판매 행을 사용할 수 없음")} color={C.blue}/>
-          <MarketMetric label={copy("Revenue / Reporting Period", "보고 기간당 매출")} value={salesContext.hasRows ? fmtCompactMoney(salesContext.revenuePeriod) : "N/A"} sub={salesContext.hasRows ? copy("Calculated from current BYOU rows", "현재 BYOU 행에서 계산") : copy("Warehouse sales rows unavailable", "웨어하우스 판매 행을 사용할 수 없음")} color={C.accent}/>
+          <MarketMetric label={copy("Revenue / Reporting Period", "보고 기간당 매출")} value={salesContext.hasRows ? fmtCompactMoney(salesContext.revenuePeriod) : "N/A"} sub={salesContext.hasRows ? copy("", "현재 BYOU 행에서 계산") : copy("Warehouse sales rows unavailable", "웨어하우스 판매 행을 사용할 수 없음")} color={C.accent}/>
           <MarketMetric
             label={copy("Units / Reporting Period", "보고 기간당 유닛")}
             value={salesContext.hasRows ? salesContext.unitsPeriod.toFixed(1) : "N/A"}
@@ -582,11 +582,11 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
             <div data-demographic-slot="header" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:10, marginBottom:11 }}>
               <div>
                 <div style={{ fontSize:13, fontWeight:600, color:C.text }}>{copy("5-mi Local Market Profile", "5마일 지역 시장 프로필")}</div>
-                <div style={{ color:C.muted, fontSize:9, marginTop:3 }}>{copy("Approximate 5-mi tract-based trade area; may cross city limits and is not a subset of the City Reference.", "대략적인 5마일 트랙 기반 상권으로, 도시 경계를 넘을 수 있으며 도시 기준의 하위 범위가 아닙니다.")}</div>
+                <div style={{ color:C.muted, fontSize:9, marginTop:3 }}>{copy("Estimated 5-mile area", "대략적인 5마일 트랙 기반 상권으로, 도시 경계를 넘을 수 있으며 도시 기준의 하위 범위가 아닙니다.")}</div>
               </div>
               <StatusChip label="5 mi" col={C.accent}/>
             </div>
-            {!localProfile && <div style={{ padding:"12px", borderRadius:7, background:C.warnFade, color:C.warn, fontSize:10, lineHeight:1.5 }}>{copy("No bundled 5-mi profile is available for this warehouse.", "이 웨어하우스의 번들 5마일 프로필이 없습니다.")}</div>}
+            {!localProfile && <div style={{ padding:"12px", borderRadius:7, background:C.warnFade, color:C.warn, fontSize:10, lineHeight:1.5 }}>{copy("No local profile available.", "이 웨어하우스의 번들 5마일 프로필이 없습니다.")}</div>}
             {localProfile && (
               <>
                 <div data-demographic-slot="summary" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(125px,1fr))", gap:8, marginBottom:13, alignContent:"start", alignItems:"start" }}>
@@ -689,7 +689,7 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
             {cityReference.state === "error" && <div style={{ padding:"12px", borderRadius:7, background:C.redFade, color:C.red, fontSize:10 }}>{cityReference.error}</div>}
             {cityReference.state === "ready" && censusCityUnavailable && <div style={{ padding:"12px", borderRadius:7, background:C.warnFade, color:C.warn, fontSize:10, lineHeight:1.5 }}>{copy("U.S. Census city estimates are not available for this Canadian warehouse.", "캐나다 웨어하우스에는 미국 Census 도시 추정치를 사용할 수 없습니다.")}</div>}
             {cityReference.state === "ready" && selectedCountry === "US" && outsideCensusPlace && <div style={{ padding:"12px", borderRadius:7, background:C.warnFade, color:C.warn, fontSize:10, lineHeight:1.5 }}>{copy("This warehouse coordinate is outside every official Census place boundary. Its mailing city was not substituted, so no misleading City Reference is shown.", "이 웨어하우스 좌표는 모든 공식 Census 지역 경계 밖에 있습니다. 오해를 방지하기 위해 우편 주소의 도시를 대신 사용하지 않았습니다.")}</div>}
-            {cityReference.state === "ready" && selectedCountry === "US" && !cityMapping && <div style={{ padding:"12px", borderRadius:7, background:C.redFade, color:C.red, fontSize:10 }}>{copy("This U.S. warehouse is missing from the bundled Census mapping.", "이 미국 웨어하우스가 번들 Census 매핑에 없습니다.")}</div>}
+            {cityReference.state === "ready" && selectedCountry === "US" && !cityMapping && <div style={{ padding:"12px", borderRadius:7, background:C.redFade, color:C.red, fontSize:10 }}>{copy("No Census profile available.", "이 미국 웨어하우스가 번들 Census 매핑에 없습니다.")}</div>}
             {cityProfile && (
               <>
                 <div data-demographic-slot="summary" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(125px,1fr))", gap:8, marginBottom:13, alignContent:"start", alignItems:"start" }}>
@@ -775,7 +775,7 @@ function MarketDemographicsView({ ranked = [], whs = [], selId, setSelId = () =>
         </div>
 
         <div style={{ padding:"10px 12px", borderRadius:7, background:C.accentFade, border:`1px solid ${C.accent}22`, color:C.text, fontSize:10, lineHeight:1.55 }}>
-          <strong>{copy("Marketing use:", "마케팅 활용:")}</strong> {copy("treat both profiles as market-level creative and media-testing signals. They describe nearby residents, not verified Costco shoppers, and do not prove that a demographic characteristic caused warehouse sales.", "두 프로필 모두 시장 수준의 크리에이티브 및 미디어 테스트 신호로 활용하세요. 이는 인근 거주자를 설명하며 실제 Costco 구매자를 확인하거나 인구통계 특성이 매출을 유발했음을 증명하지 않습니다.")}
+          <strong>{copy("Marketing use:", "마케팅 활용:")}</strong> {copy("Area demographics; not shopper profiles or proof of sales causation.", "두 프로필 모두 시장 수준의 크리에이티브 및 미디어 테스트 신호로 활용하세요. 이는 인근 거주자를 설명하며 실제 Costco 구매자를 확인하거나 인구통계 특성이 매출을 유발했음을 증명하지 않습니다.")}
         </div>
       </Panel>
     </div>

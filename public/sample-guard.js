@@ -1,3 +1,4 @@
+(()=>{if(window.__intelSampleGuard)return;window.__intelSampleGuard=true;
 // Original screens with local fictional data. No external navigation or uploads.
 const external=a=>{try{return new URL(a,location.href).origin!==location.origin;}catch{return true;}};
 document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(a&&external(a.href)){e.preventDefault();e.stopImmediatePropagation();alert('Sample only: external links are disabled.');}},true);
@@ -6,3 +7,5 @@ function disableUploads(){document.querySelectorAll('input[type=file]').forEach(
 document.addEventListener('DOMContentLoaded',()=>{disableUploads();new MutationObserver(disableUploads).observe(document.body,{childList:true,subtree:true});});
 document.addEventListener('drop',e=>{e.preventDefault();e.stopImmediatePropagation();},true);
 document.addEventListener('change',e=>{if(e.target.matches('input[type=file]')){e.target.value='';e.preventDefault();e.stopImmediatePropagation();}},true);
+
+})();

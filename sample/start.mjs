@@ -11,7 +11,7 @@ async function run(file){const p=child(file);await new Promise((r,j)=>{p.once('e
 async function stop(){for(const p of children)p.kill();server?.close();setTimeout(()=>process.exit(0),300).unref();}let server;
 process.on('SIGINT',stop);process.on('SIGTERM',stop);
 if(id!=='tasktrack'){
- const db=child('sample/db-host.mjs',[id==='trackify'?'trackify':'intel',path.join(state,'database'),String(DBPORT)]);
+ const db=child('sample/db-host.mjs',[id==='trackify'?'trackify':'intel',path.join(state,'database-pnl-v2'),String(DBPORT)]);
  await new Promise((r,j)=>{db.once('message',r);db.once('error',j);db.once('exit',()=>j(Error('Database failed to start')));});
  if(id==='trackify'){await run('scripts/portfolio-seed.mjs');child('node_modules/next/dist/bin/next',['start','--hostname','127.0.0.1','--port',String(BACKEND)]);}
  else {await mkdir(env.BYOU_DATA_DIR,{recursive:true});for(const f of ['latest-dataset.json','latest-startup.json']){try{await stat(path.join(env.BYOU_DATA_DIR,f));}catch{await copyFile(path.join(root,'sample/seed',f),path.join(env.BYOU_DATA_DIR,f));}}await run('sample/seed-pnl.mjs');child('server.mjs');}
